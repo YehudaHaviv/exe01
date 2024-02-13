@@ -1,24 +1,37 @@
 
 
-all: my_graph my_Knapsack
+all: recursives loops recursive loopd mains maindloop maindrec
 
-my_graph: my_graph.o libmy_mat.a
-	gcc -Wall -g -o my_graph my_graph.o libmy_mat.a
+loops: libclassloops.a
 
-my_Knapsack: my_Knapsack.o
-	gcc -Wall -g -o my_Knapsack my_Knapsack.o
+libclassloops.a: 
+	gcc -fPIC -c basicClassification.c advancedClassificationLoop.c
+	ar -rc libclassloops.a basicClassification.o advancedClassificationLoop.o
+		
+recursives: libclassrec.a
 
-my_graph.o: my_graph.c my_mat.h
-	gcc -Wall -g -c my_graph.c
+libclassrec.a:
+	gcc -fPIC -c basicClassification.c advancedClassificationRecursion.c
+	ar -rc libclassrec.a basicClassification.o advancedClassificationRecursion.o
 
-my_Knapsack.o: my_Knapsack.c
-	gcc -Wall -g -c my_Knapsack.c
+recursive: libclassrec.so
 
-libmy_mat.a: my_mat.o
-	ar -rcs libmy_mat.a my_mat.o
+libclassrec.so:
+	gcc -shared basicClassification.o advancedClassificationRecursion.o -o libclassrec.so
 
-my_mat.o: my_mat.c my_mat.h
-	gcc -Wall -g -c my_mat.c
+loopd: libclassloops.so
+
+libclassloops.so:
+	gcc -shared basicClassification.o advancedClassificationLoop.o -o libclassloops.so
+
+mains: libclassloops.a
+	gcc main.c -L. libclassloops.a -o mains
+
+maindloop: libclassloops.so
+	gcc main.c -L. libclassloops.so -o maindloop
+
+maindrec: libclassrec.so
+	gcc main.c -L. libclassrec.so -o maindrec
 
 clean:
-	rm -f my_graph my_Knapsack *.o
+	rm -f basicClassification.o advancedClassificationRecursion.o advancedClassificationLoop.o 		libclassrec.a libclassloops.a libclassloops.so libclassrec.so mains maindloop maindrec
